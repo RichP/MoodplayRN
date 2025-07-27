@@ -4,7 +4,6 @@ import { Platform } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -14,23 +13,34 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
+  tabBarActiveTintColor: '#6366f1',
+        tabBarInactiveTintColor: Colors[colorScheme ?? 'light'].cardBg,
+        headerShown: true,
         tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
+        tabBarStyle: {
+          backgroundColor: Colors[colorScheme ?? 'light'].background,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          shadowColor: Colors[colorScheme ?? 'light'].tint,
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.08,
+          shadowRadius: 8,
+          elevation: 8,
+          height: 64,
+          paddingBottom: 8,
+          paddingTop: 8,
+        },
+        tabBarLabelStyle: {
+          fontFamily: Platform.OS === 'ios' ? 'Segoe UI' : 'Roboto',
+          fontSize: 14,
+          fontWeight: '600',
+        },
       }}>
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: 'MoodPlay',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="heart.fill" color={color} />, 
         }}
       />
       <Tabs.Screen
@@ -38,6 +48,8 @@ export default function TabLayout() {
         options={{
           title: 'Explore',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          headerTitle: 'Your Mixtape',
+          headerTitleStyle: { color: '#6366f1', fontWeight: 'bold', fontSize: 28 },
         }}
       />
     </Tabs>

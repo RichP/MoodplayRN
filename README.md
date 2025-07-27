@@ -1,50 +1,73 @@
-# Welcome to your Expo app 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Get started
+# MoodplayRN
 
-1. Install dependencies
+MoodplayRN is a mobile app that lets users create a personalized mixtape of games based on their current mood. Users can browse games by mood, build a custom mixtape, and easily share their mixtape with friends using a simple link or native sharing options.
+
+This is an [Expo](https://expo.dev) React Native project for Moodplay.
+
+## Getting Started
+
+1. **Install dependencies**
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. **Start the app**
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+You can open the app in a development build, Android emulator, iOS simulator, or Expo Go.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Environment Variables
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Create a `.env` file in the project root for secrets and configuration:
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+MOBILE_APP_SECRET=your_secret_here
+API_BASE_URL=https://your-api-url.com
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+These are loaded via `process.env` in the app and config files.
 
-## Learn more
+## Custom URL Scheme
 
-To learn more about developing your project with Expo, look at the following resources:
+This app uses a custom URL scheme for deep linking:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- Scheme: `moodplay://`
 
-## Join the community
+Set in `app.config.js`:
 
-Join our community of developers creating universal apps.
+```js
+scheme: "moodplay"
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Expo automatically adds this to the native manifests when building.
+
+## API Usage
+
+API requests use the base URL from `.env`:
+
+```js
+const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3000';
+```
+
+Update your backend's `ALLOWED_ORIGINS` to include `moodplay://` for mobile deep linking.
+
+## File-based Routing
+
+Edit files in the **app** directory. This project uses [Expo Router](https://docs.expo.dev/router/introduction/).
+
+## Learn More
+
+- [Expo documentation](https://docs.expo.dev/)
+- [Expo Router](https://docs.expo.dev/router/introduction/)
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/)
+
+## Community
+
+- [Expo on GitHub](https://github.com/expo/expo)
+- [Discord community](https://chat.expo.dev)
