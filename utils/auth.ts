@@ -1,6 +1,11 @@
 // utils/auth.ts
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+
 export async function getMobileJwtToken(appKey: string) {
-  const response = await fetch('http://localhost:3000/api/auth/mobile', {
+
+  const url = `${API_BASE_URL}/api/auth/mobile`;
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

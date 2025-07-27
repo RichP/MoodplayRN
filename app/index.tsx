@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import {
@@ -12,6 +11,7 @@ import {
   View
 } from 'react-native';
 import AnimatedMoodButton from '../components/AnimatedMoodButton';
+import { useToken } from '../context/TokenContext';
 import { moodSelectionScreenStyles } from '../styles/moodSelectionScreen';
 import type { Mood as ApiMood } from '../types/moodApi';
 import { getMoods } from '../utils/api';
@@ -22,12 +22,15 @@ export default function MoodSelectionScreen() {
   const [moodsError, setMoodsError] = useState<string | null>(null);
   const [tokenStatus, setTokenStatus] = useState<string>('');
   const [loadingMoods, setLoadingMoods] = useState<boolean>(false);
-
-  // Dummy token for demonstration; replace with your token logic
-  const token = ""; // TODO: Replace with actual token retrieval
+  const { token, loading: tokenLoading } = useToken();
 
   // Fetch moods from backend on mount (requires JWT token)
   useEffect(() => {
+    if (tokenLoading) return; // Wait for token to be ready
+    if (!token) {
+      setMoodsError('No token available.');
+      return;
+    }
     const fetchMoods = async () => {
       setLoadingMoods(true);
       setMoodsError(null);
@@ -36,45 +39,32 @@ export default function MoodSelectionScreen() {
       try {
         // Always check cache first
         const cached = await AsyncStorage.getItem('cachedMoods');
-        let cacheValid = false;
         let cachedMoods: ApiMood[] = [];
         if (cached) {
           const { moods, timestamp } = JSON.parse(cached);
           const now = Date.now();
           const threeDays = 3 * 24 * 60 * 60 * 1000;
           cachedMoods = moods;
-          if (now - timestamp < threeDays) {
+          if (Array.isArray(cachedMoods) && cachedMoods.length > 0 && now - timestamp < threeDays) {
             setMoods(cachedMoods);
             setTokenStatus('Loaded moods from cache.');
             setLoadingMoods(false);
             return;
           }
         }
-        // Cache expired or not present, try backend
-        setTokenStatus('Fetching JWT token...');
-        const token = await SecureStore.getItemAsync('jwtToken');
-        if (token) {
-          setTokenStatus('JWT token found. Fetching moods...');
-          const data = await getMoods(token);
-          if (Array.isArray(data)) {
-            moodsList = data as ApiMood[];
-          } else if (data && Array.isArray(data.moods)) {
-            moodsList = data.moods as ApiMood[];
-          } else {
-            moodsList = [data as ApiMood];
-          }
-          setMoods(moodsList);
-          setTokenStatus('Moods fetched successfully.');
-          // Cache moods with timestamp
-          await AsyncStorage.setItem('cachedMoods', JSON.stringify({ moods: moodsList, timestamp: Date.now() }));
-          console.debug('Fetched moods:', moodsList);
-        } else if (cachedMoods.length > 0) {
-          // No token, but expired cache exists, use as fallback
-          setMoods(cachedMoods);
-          setTokenStatus('Loaded expired cache (no token).');
+        setTokenStatus('JWT token found. Fetching moods...');
+        const data = await getMoods(token);
+        if (Array.isArray(data)) {
+          moodsList = data as ApiMood[];
+        } else if (data && Array.isArray(data.moods)) {
+          moodsList = data.moods as ApiMood[];
         } else {
-          setMoodsError('No moods available.');
+          moodsList = [data as ApiMood];
         }
+        setMoods(moodsList);
+        setTokenStatus('Moods fetched successfully.');
+        await AsyncStorage.setItem('cachedMoods', JSON.stringify({ moods: moodsList, timestamp: Date.now() }));
+        console.debug('Fetched moods:', moodsList);
       } catch (err: any) {
         setTokenStatus('Error fetching token or moods.');
         setMoodsError(err.message);
@@ -83,7 +73,7 @@ export default function MoodSelectionScreen() {
       }
     };
     fetchMoods();
-  }, []);
+  }, [token, tokenLoading]);
 
   const handleMoodSelection = (mood: string) => {
     // Navigate to the main app with the selected mood

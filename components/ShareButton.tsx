@@ -1,15 +1,15 @@
-import React from 'react';
-import { TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Sharing from 'expo-sharing';
-import * as Clipboard from 'expo-clipboard';
+import React from 'react';
+import { Animated, Platform, Share, TouchableOpacity } from 'react-native';
+// ...existing imports...
 
 interface ShareButtonProps {
   ids: string[];
 }
 
 export default function ShareButton({ ids }: ShareButtonProps) {
-// Duplicate code removed. Only one ShareButton component is exported above.
+  // Duplicate code removed. Only one ShareButton component is exported above.
 
   const iconScale = React.useRef(new Animated.Value(1)).current;
 
@@ -28,16 +28,17 @@ export default function ShareButton({ ids }: ShareButtonProps) {
     ]).start();
   };
 
+
+
   const handleShare = async () => {
     const url = `https://moodplay.co.uk/mixtape?ids=${encodeURIComponent(ids.join(','))}`;
     try {
-      if (await Sharing.isAvailableAsync()) {
+      if (Platform.OS === 'ios' && (await Sharing.isAvailableAsync())) {
         await Sharing.shareAsync(url);
         handleSuccessAnimation();
       } else {
-        await Clipboard.setStringAsync(url);
+        await Share.share({ message: url });
         handleSuccessAnimation();
-        alert('Link copied to clipboard!');
       }
     } catch (e) {
       alert('Unable to share.');

@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SwipeableCard } from '../../components/cards';
+import { useToken } from '../../context/TokenContext';
 import { homeScreenStyles } from '../../styles/homeScreen';
 import { getGames } from '../../utils/api';
 
@@ -17,25 +17,26 @@ export default function HomeScreen() {
 	const [games, setGames] = useState<any[]>([]); // Store games from API
 	const [discardedGames, setDiscardedGames] = useState<any[]>([]); // Store discarded games
 	const [mixtape, setMixtape] = useState<any[]>([]);
+	const { token, loading: tokenLoading } = useToken();
 
 	// Set header title dynamically based on mood
-			React.useEffect(() => {
-				navigation.setOptions({
-					headerTitle: `${mood ? mood.charAt(0).toUpperCase() + mood.slice(1) : 'Happy'} Activities`,
-					headerTitleStyle: { color: '#6366f1', fontWeight: 'bold', fontSize: 28 },
-							headerLeft: () => (
-								<TouchableOpacity
-									onPress={handleChangeMood}
-									style={{ marginLeft: 8, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 24, backgroundColor: 'transparent', flexDirection: 'row', alignItems: 'center' }}
-									activeOpacity={0.7}
-									accessibilityLabel="Back"
-								>
-									{/* Use a left arrow Unicode or icon for back button look */}
-									<Text style={{ color: '#6366f1', fontSize: 24, marginRight: 2 }}>←</Text>
-								</TouchableOpacity>
-							),
-				});
-			}, [navigation, mood]);
+	React.useEffect(() => {
+		navigation.setOptions({
+			headerTitle: `${mood ? mood.charAt(0).toUpperCase() + mood.slice(1) : 'Happy'} Activities`,
+			headerTitleStyle: { color: '#6366f1', fontWeight: 'bold', fontSize: 28 },
+			headerLeft: () => (
+				<TouchableOpacity
+					onPress={handleChangeMood}
+					style={{ marginLeft: 8, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 24, backgroundColor: 'transparent', flexDirection: 'row', alignItems: 'center' }}
+					activeOpacity={0.7}
+					accessibilityLabel="Back"
+				>
+					{/* Use a left arrow Unicode or icon for back button look */}
+					<Text style={{ color: '#6366f1', fontSize: 24, marginRight: 2 }}>←</Text>
+				</TouchableOpacity>
+			),
+		});
+	}, [navigation, mood]);
 
 	// Load mixtape from AsyncStorage on mount
 	useEffect(() => {
@@ -57,15 +58,15 @@ export default function HomeScreen() {
 	console.debug('HomeScreen mood parameter:', mood);
 
 	useEffect(() => {
+		if (tokenLoading) return; // Wait for token to be ready
+		if (!token || !mood) {
+			console.warn('No JWT token or mood found');
+			setGames([]);
+			return;
+		}
 		const fetchGames = async () => {
 			try {
-				const token = await SecureStore.getItemAsync('jwtToken');
-				if (!token) {
-					console.warn('No JWT token found');
-					return;
-				}
 				const gamesJson = await getGames(token, mood ?? '');
-				// Map games to card objects with only title, image, steamUrl
 				const mappedGames = (Array.isArray(gamesJson) ? gamesJson : gamesJson.games || []).map((game: any, idx: number) => ({
 					id: game.id || idx,
 					title: game.name,
@@ -81,10 +82,8 @@ export default function HomeScreen() {
 				setGames([]);
 			}
 		};
-		if (mood) {
-			fetchGames();
-		}
-	}, [mood]);
+		fetchGames();
+	}, [token, tokenLoading, mood]);
 
 	// Filter out discarded and mixtape games from available games
 	const availableGames = games.filter(
@@ -128,7 +127,7 @@ export default function HomeScreen() {
 	const nextCard = availableGames[(currentCardIndex + 1) % availableGames.length];
 
 	return (
-		<SafeAreaView style={[homeScreenStyles.container, { backgroundColor: '#f7f7fa' }]}> 
+		<SafeAreaView style={[homeScreenStyles.container, { backgroundColor: '#f7f7fa' }]}>
 			{/* Full screen linear gradient with indigo-50 and slate-200 */}
 			<LinearGradient
 				colors={["#eef2ff", "#e2e8f0"]}

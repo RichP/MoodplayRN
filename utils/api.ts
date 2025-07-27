@@ -66,7 +66,7 @@ export async function verifyToken(token: string) {
  */
 export async function getMoods(token: string) {
   const url = `${API_BASE_URL}/api/moods`;
-  console.debug('Fetching moods from:', url);
+  console.log('Fetching moods from:', url);
   const response = await fetch(url, {
     method: 'GET',
     headers: {

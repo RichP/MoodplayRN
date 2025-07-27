@@ -11,6 +11,7 @@ import Constants from 'expo-constants';
 import * as SecureStore from 'expo-secure-store';
 import { useEffect } from 'react';
 import { getMobileJwtToken } from '../utils/auth';
+import { TokenProvider } from '../context/TokenContext';
 
 export default function RootLayout() {
 
@@ -47,14 +48,16 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false, animation: 'slide_from_left' }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
+      <TokenProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false, animation: 'slide_from_left' }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </TokenProvider>
     </GestureHandlerRootView>
   );
 }
