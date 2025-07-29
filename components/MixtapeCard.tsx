@@ -1,5 +1,7 @@
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect } from 'react';
-import { View, Image, Text } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -7,8 +9,6 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
 import styles from '../styles/MixtapeScreen.styles';
 
 const { width: screenWidth } = require('react-native').Dimensions.get('window');
@@ -30,10 +30,10 @@ const MixtapeCard: React.FC<MixtapeCardProps> = ({ item }) => {
         },
         { scale: 1.05 },
       ],
-      shadowColor: '#6366f1',
-      shadowOffset: { width: 0, height: 12 },
-      shadowOpacity: 0.25,
-      shadowRadius: 32,
+       shadowColor: '#6366f1',
+      // shadowOffset: { width: 0, height: 12 },
+       shadowOpacity: 0.25,
+       shadowRadius: 32,
       borderWidth: 1,
       borderColor: '#a5b4fc',
       elevation: 24,
