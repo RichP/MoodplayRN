@@ -2,22 +2,32 @@ import 'dotenv/config';
 
 export default {
   expo: {
-    name: "MoodplayRN",
-    slug: "MoodplayRN",
+    name: "Moodplay",
+    slug: "moodplay",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/images/icon.png",
     scheme: "moodplay",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
+    icon: "./assets/images/icon.png",
+    splash: {
+      image: "./assets/images/splash.png",
+      resizeMode: "contain",
+      backgroundColor: "#ffffff"
+    },
     ios: {
+      buildNumber: "1",
+      bundleIdentifier: "com.yourcompany.moodplay",
       supportsTablet: true
     },
     android: {
+      versionCode: 1,
+      package: "com.yourcompany.moodplay",
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff"
       },
+      permissions: [],
       edgeToEdgeEnabled: true
     },
     web: {
@@ -43,6 +53,7 @@ export default {
     },
     extra: {
       MOBILE_APP_SECRET: process.env.MOBILE_APP_SECRET,
+      EXPO_PUBLIC_API_BASE_URL: process.env.EXPO_PUBLIC_API_BASE_URL,
     },
   },
 };
