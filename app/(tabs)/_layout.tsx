@@ -40,14 +40,14 @@ export default function TabLayout() {
         name="home"
         options={{
           title: 'MoodPlay',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="heart.fill" color={color} />, 
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="headphones" color={color} />, 
         }}
       />
       <Tabs.Screen
         name="explore"
         options={{
           title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="star.fill" color={color} />,
           headerTitle: 'Your Mixtape',
           headerTitleStyle: { color: '#6366f1', fontWeight: 'bold', fontSize: 28 },
         }}

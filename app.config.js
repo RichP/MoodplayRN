@@ -10,6 +10,8 @@ export default {
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     icon: "./assets/images/icon.png",
+    privacy: "public",
+    privacyPolicyUrl: "https://www.moodplay.co.uk/privacy",
     splash: {
       image: "./assets/images/splash.png",
       resizeMode: "contain",
@@ -22,7 +24,7 @@ export default {
     },
     android: {
       versionCode: 1,
-      package: "com.yourcompany.moodplay",
+      package: "com.tapbam.moodplay",
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff"
